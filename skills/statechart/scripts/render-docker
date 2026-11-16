@@ -1,0 +1,30 @@
+#!/bin/sh
+# render-docker — renders a Mermaid chart to SVG with Pele inside the
+# verify-toolbox container, colored by statechart's references/render.md.
+#
+# Usage (paths relative to the current folder):
+#   render-docker CHART.mmd CHART.svg
+set -eu
+
+self=$0
+while [ -L "$self" ]; do
+  link=$(readlink "$self")
+  case $link in
+    /*) self=$link ;;
+    *) self=$(dirname "$self")/$link ;;
+  esac
+done
+here=$(cd "$(dirname "$self")/.." && pwd)   # the statechart skill dir
+skills_dir=$(cd "$here/.." && pwd)
+
+docker image inspect verify-toolbox:latest >/dev/null 2>&1 || {
+  echo "The verify-toolbox image is not built. Build it once with:" >&2
+  echo "  the verify-toolbox skill's build script (../verify-toolbox/build)" >&2
+  exit 2
+}
+
+exec docker run --rm -i \
+  -v "$skills_dir:/skills:ro" \
+  -v "$PWD:/work" -w /work \
+  verify-toolbox:latest \
+  node /skills/flow-promises/scripts/render.mjs "$@"

@@ -1,0 +1,30 @@
+#!/bin/sh
+# statechart-docker — runs the upstream statechart check inside the
+# verify-toolbox container, so Java and TLC never touch this machine.
+#
+# Usage (same arguments as scripts/statechart, paths relative to the current folder):
+#   statechart-docker SPEC.tla [--config FILE] [--view FILE] [--out DIR]
+set -eu
+
+self=$0
+while [ -L "$self" ]; do
+  link=$(readlink "$self")
+  case $link in
+    /*) self=$link ;;
+    *) self=$(dirname "$self")/$link ;;
+  esac
+done
+here=$(cd "$(dirname "$self")/.." && pwd)   # the statechart skill dir
+skills_dir=$(cd "$here/.." && pwd)
+
+docker image inspect verify-toolbox:latest >/dev/null 2>&1 || {
+  echo "The verify-toolbox image is not built. Build it once with:" >&2
+  echo "  the verify-toolbox skill's build script (../verify-toolbox/build)" >&2
+  exit 2
+}
+
+exec docker run --rm -i \
+  -v "$skills_dir:/skills:ro" \
+  -v "$PWD:/work" -w /work \
+  verify-toolbox:latest \
+  sh /skills/statechart/scripts/statechart "$@"

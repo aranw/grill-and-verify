@@ -1,0 +1,6 @@
+#!/bin/sh
+# Builds (or rebuilds) the verify-toolbox image used by the
+# statechart-docker / check-docker / render-docker / tlc-docker shims.
+set -eu
+dir=$(cd "$(dirname "$0")" && pwd)
+exec docker build -t verify-toolbox:latest "$dir"

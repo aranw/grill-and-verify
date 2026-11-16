@@ -1,0 +1,11 @@
+{
+  "name": "grill-and-verify",
+  "version": "0.1.0",
+  "description": "Task-preparation and verification suite: grill a plan into shared understanding, model it formally (TLA+/Quint), check every promise with a model checker, draw the state flow with bug paths, and keep the proofs true as code changes. Toolchain runs in Docker.",
+  "keywords": ["pi-package"],
+  "pi": {
+    "resources": {
+      "skills": ["./skills"]
+    }
+  }
+}

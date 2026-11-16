@@ -1,0 +1,13 @@
+{
+  "name": "aranw",
+  "owner": {
+    "name": "Aran Wilkinson"
+  },
+  "plugins": [
+    {
+      "name": "grill-and-verify",
+      "source": "./",
+      "description": "Task-preparation and verification suite: grill a plan, model it formally, check promises with a model checker, draw state flows with bug paths, keep proofs in sync with code. Dockerized toolchain."
+    }
+  ]
+}

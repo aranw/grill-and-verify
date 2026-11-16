@@ -1,0 +1,31 @@
+#!/bin/sh
+# tlc-docker — runs TLC (the TLA+ model checker) directly inside the
+# verify-toolbox container. For ad-hoc TLC runs, such as the
+# `-dump dot,actionlabels` pass in flow-promises' merged-chart fallback.
+#
+# Usage (spec/config paths relative to the current folder):
+#   tlc-docker [TLC options...] SPEC.tla
+set -eu
+
+self=$0
+while [ -L "$self" ]; do
+  link=$(readlink "$self")
+  case $link in
+    /*) self=$link ;;
+    *) self=$(dirname "$self")/$link ;;
+  esac
+done
+here=$(cd "$(dirname "$self")/.." && pwd)   # the statechart skill dir
+skills_dir=$(cd "$here/.." && pwd)
+
+docker image inspect verify-toolbox:latest >/dev/null 2>&1 || {
+  echo "The verify-toolbox image is not built. Build it once with:" >&2
+  echo "  the verify-toolbox skill's build script (../verify-toolbox/build)" >&2
+  exit 2
+}
+
+exec docker run --rm -i \
+  -v "$skills_dir:/skills:ro" \
+  -v "$PWD:/work" -w /work \
+  verify-toolbox:latest \
+  java -cp /opt/tla/tla2tools.jar -XX:+UseParallelGC tlc2.TLC "$@"

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin.json",
+  "name": "grill-and-verify",
+  "description": "Task-preparation and verification suite: grill a plan into shared understanding, model it formally (TLA+/Quint), check every promise with a model checker, draw the state flow with bug paths, and keep the proofs true as code changes. Toolchain (Java, TLC, Quint, Pele) runs in Docker — nothing installed on the host.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Aran Wilkinson"
+  }
+}
