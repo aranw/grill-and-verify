@@ -34,7 +34,7 @@ grill-me ──▶ model & check ──▶ statechart ──▶ board ──▶ 
 ## Install — Claude Code
 
 ```
-/plugin marketplace add Aran-Wilkinson_civica/grill-and-verify
+/plugin marketplace add aranw/grill-and-verify
 /plugin install grill-and-verify@aranw
 ```
 
@@ -45,7 +45,7 @@ description where the harness supports it).
 ## Install — pi
 
 ```
-pi install git:github.com/Aran-Wilkinson_civica/grill-and-verify
+pi install git:github.com/aranw/grill-and-verify
 ```
 
 or from a local checkout:
