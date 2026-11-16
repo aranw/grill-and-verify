@@ -1,7 +1,7 @@
 ---
 name: grill-and-verify
-description: "Task-preparation pipeline that stress-tests a plan or feature idea, then turns the settled understanding into a formal model, checks it with a model checker, draws the state flow with bug paths, and puts it all on a live visual board. Use for /grill-and-verify, when preparing a task or plan of action, or when a feature design or re-architecture needs to be verified before building."
 disable-model-invocation: true
+description: "Task-preparation pipeline that stress-tests a plan or feature idea, then turns the settled understanding into a formal model, checks it with a model checker, draws the state flow with bug paths, and puts it all on a live visual board. Use for /grill-and-verify, when preparing a task or plan of action, or when a feature design or re-architecture needs to be verified before building."
 ---
 
 # Grill and verify
