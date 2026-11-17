@@ -11,14 +11,16 @@ every decision interrogated, every promise the system makes checked against a
 formal model, every broken promise visible as a path through the states, and
 the whole thing on a living board you can watch take shape.
 
-The pipeline has five stages. Each stage ends at a decision that belongs to
-the user; do not start the next stage until the current one is settled.
+The pipeline has six stages. Each stage ends at a decision that belongs to
+the user; do not start the next stage until the current one is settled. The
+formal check comes before generating reusable project-local skills. Skill
+generation is the final work stage, and only happens after the verification
+has produced a useful result and behaved as intended.
 
 ```
-grill-me ──▶ model & check ──▶ statechart ──▶ board ──▶ hand off
-(settle the   (flow-promises    (diagram +    (living    (verified plan,
- decisions)    or create-        bug paths)    board)     tests, next steps)
-               formal-verification-skill)
+grill-me ──▶ model & check ──▶ statechart ──▶ board ──▶ validate ──▶ package skills + hand off
+(settle the   (formal model     (diagram +    (living    (useful,      (only after validation; verified plan,
+ decisions)    and promises)     bug paths)    board)     trustworthy?)  skills are last)    tests, next steps)
 ```
 
 Each stage names a sibling skill in this plugin. Load and follow its
@@ -57,10 +59,12 @@ Pick the branch by whether the code exists:
   ARE the formal verification model. Run its check with
   `scripts/check-docker`.
 - **Code exists** (verify where a bug costs the most and tests reach the
-  least): load and follow
-  `../create-formal-verification-skill/SKILL.md`. It chooses the tool (TLA+
-  is the default for orderings and state machines) and leaves a project-local
-  skill in the project's agent-skills directory that re-checks the property.
+  least): use the target-selection and tool-selection guidance in
+  `../create-formal-verification-skill/SKILL.md`, but do not generate its
+  project-local skill yet. Build and run the formal verification in a
+  temporary working area first. TLA+ is the default for orderings and state
+  machines. Package the verified check as a reusable project-local skill only
+  in stage 6.
 
 Both branches end the same way: a model, a config, and rules in the user's
 words — each rule either **holds** or **breaks**, with a counterexample path
@@ -94,25 +98,55 @@ end. The board shows, from top to bottom:
 Without such a skill, present the same five sections inline in the
 conversation and write them to a markdown file beside the design seed.
 
-## Stage 5 — Hand off
+## Stage 5 — Validate the result
 
-The task is prepared when:
+Before creating reusable skills, make sure the formal verification did what
+was intended:
 
-- every promise holds, or the user has accepted a break in writing;
-- the design seed is checked in where the team keeps design docs
-  (flow-promises puts it under `docs/flows/FLOW/` by default);
-- the hand-off names, in plain words: what was verified, with which tool and
-  bounds, what the model leaves out, and the one command that re-checks it.
+- Every selected promise has a clear result: it holds, or it breaks with a
+  counterexample path. No selected promise is left unchecked or unexplained.
+- The model or harness matches the settled design or the code it claims to
+  describe; investigate any mismatch rather than treating a model-only path
+  as a code bug.
+- The checker has demonstrated that it can catch a violation. If there was no
+  natural counterexample, test it against a deliberately broken model for a
+  pre-code flow, or a deliberately broken code variant when code exists (as
+  `create-formal-verification-skill` requires).
+- Resolve each actionable finding, or have the user explicitly accept the
+  remaining break. Recheck after changes.
 
-Then state the follow-on work explicitly:
+A useful result includes either an actionable finding that changed the design
+or code, or confirmation of an important promise with a check that has shown
+it can fail when that promise is violated. If the check did not run, did not
+catch the intended break, or cannot be trusted to represent the system, fix
+that first; do not package a reusable skill yet.
 
-- Each promise becomes an **acceptance test**; each path that changed the
-  design becomes a **test that replays it**, one step per action.
-- Once the code exists, the create-verification-skill skill gives the repo
-  a scripted way to drive the real app like a user.
-- After changes that skip the checks, maintain-formal-verification-skill
-  and maintain-verification-skill bring the verification back in line with
-  the code and say whether each failure is drift or a bug.
+## Stage 6 — Package skills and hand off
+
+This is the final work stage. Only package skills for checks that passed the
+stage 5 gate, and only where a reusable skill applies:
+
+- **Code exists:** load and follow
+  `../create-formal-verification-skill/SKILL.md` to turn the already validated
+  property and check into a project-local skill. Keep the target and promise
+  consistent with the verified result, and prove the generated skill against
+  a deliberately broken variant as its instructions require.
+- **The real app exists:** use `../create-verification-skill/SKILL.md` when a
+  reusable, user-facing app-driving check is useful. It must be run end to
+  end and leave evidence, as that skill requires. Do not create it for a
+  pre-code design; defer it until the app can actually be driven.
+- **Nothing useful was verified, or verification is still uncertain:** skip
+  skill generation and report why. Keep the design model and findings as
+  appropriate; do not create skills merely to complete the pipeline.
+
+Then hand off in plain words: what was verified, with which tool and bounds,
+what the model leaves out, the result of the validation gate, any skills
+created (or why not), and the command that re-checks the formal result. Each
+promise becomes an **acceptance test**; each path that changed the design
+becomes a **test that replays it**, one step per action. After later changes
+that skip the checks, `maintain-formal-verification-skill` and
+`maintain-verification-skill` bring the verification back in line and say
+whether each failure is drift or a bug.
 
 ## If the user only wants part of the pipeline
 

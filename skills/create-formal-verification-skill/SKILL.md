@@ -8,6 +8,16 @@ disable-model-invocation: true
 
 A test checks the cases that someone thought to write. Formal verification checks every case in a stated scope: every order of steps in a model, every input up to a bound, or every input. This skill finds the part of the repo where that matters most, verifies one property of it, and leaves a project-local skill that lets the next agent check a change against that property. Write that skill for an agent who reads it cold, mid-change, and has never seen your work. The user must be able to trust the result and act on it without learning the verification language.
 
+## Use within `grill-and-verify`
+
+When this skill is part of the full `grill-and-verify` pipeline, its work is
+split across two stages. During the model-and-check stage, use the target and
+tool-selection guidance below to run a temporary verification; do not write
+the project-local skill yet. Generate and prove that reusable skill only in
+the pipeline's final packaging stage, after the formal check has produced a
+useful result and passed its validation gate. When invoked on its own, follow
+the complete workflow in this file.
+
 ## Choose the target from the code
 
 Answer from the codebase, and ask the user only what you cannot observe. If the user named an area or a bug, start there.

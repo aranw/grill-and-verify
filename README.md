@@ -11,11 +11,17 @@ tree, consumed by both.
 ## The pipeline
 
 ```
-grill-me ──▶ model & check ──▶ statechart ──▶ board ──▶ hand off
-(settle the   (flow-promises    (diagram +    (living    (verified plan,
- decisions)    or create-        bug paths)    board)     tests, next steps)
-               formal-verification-skill)
+grill-me ──▶ model & check ──▶ statechart ──▶ board ──▶ validate ──▶ package skills ──▶ hand off
+(settle the   (formal model     (diagram +    (living    (useful,      (only after       (verified plan,
+ decisions)    and promises)     bug paths)    board)     trustworthy?)  validation)        tests, next steps)
 ```
+
+In the full pipeline, verification comes before reusable project-local skill
+creation. Skills are packaged only at the end, when the checks have produced a
+useful result and behaved as intended; if the feature is not built yet, app-driving
+skills wait until implementation exists. For an agent-facing runbook,
+selection criteria, and good/bad use-case examples, see
+[`docs/agent-workflow-guide.md`](docs/agent-workflow-guide.md).
 
 ## Skills
 
