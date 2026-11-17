@@ -24,7 +24,37 @@ grill-me ──▶ model & check ──▶ statechart ──▶ board ──▶ 
 ```
 
 Each stage names a sibling skill in this plugin. Load and follow its
-`SKILL.md`; the paths below are relative to this skill's directory.
+`SKILL.md`; the paths below are relative to this skill's directory. Load only
+the skill for the active stage, just before entering it; do not preload every
+sibling skill.
+
+## Keep phase and context visible
+
+As soon as the task scope is clear, create or identify one concise
+`WORKFLOW_STATUS.md` beside the workflow's working artifacts. For a pre-code
+flow, keep it with the flow seed; for existing code, keep it in the temporary
+model/report workspace. Do not turn it into a transcript or commit it by
+default. Keep detailed models, charts, and checker output in their own files
+and reference those paths from the status file.
+
+Use the six stage names and announce the current phase when entering it and
+when it changes. At a phase boundary, tell the user only: what completed, the
+gate result, the next phase/action, and anything waiting on them. Use statuses
+`IN PROGRESS`, `WAITING FOR USER`, `BLOCKED`, `DONE`, or `SKIPPED`. Do not emit
+repetitive progress narration for every tool call. Do not move to the next
+phase until the current phase's gate is satisfied.
+
+Keep `WORKFLOW_STATUS.md` to a compact current snapshot, not a running diary.
+It should record the one-sentence scope, current phase/status, settled
+user decisions, promises and their current status, unresolved findings or
+user decisions, artifact paths, and one concrete next action. Preserve the
+user's exact promise wording, but link to full reports instead of copying
+them. Update it after meaningful decisions, check results, and phase changes.
+If the context is getting large, save this checkpoint first, then use the
+harness's compaction/resume mechanism if available. On resume, read this file
+and the referenced active artifacts; do not reconstruct the whole history or
+rerun completed checks without a reason. Never reduce verification coverage
+or omit an important assumption just to save context.
 
 ## Toolchain check first
 

@@ -70,6 +70,70 @@ pipeline. If none of these apply, use ordinary design discussion and tests.
 If the user asks for only one part, honor that scope. Do not silently expand a
 partial request into the full pipeline.
 
+## Keep phase and context visible
+
+The full run has six phases: **1 Grill**, **2 Model and check**, **3 Statechart**,
+**4 Board**, **5 Validate**, and **6 Package skills and hand off**. At the
+beginning of a phase, show a short marker such as:
+
+> **Workflow 2/6 — Model and check · IN PROGRESS**<br>
+> Gate: promises and world actions are settled. Next: build and run the model.
+
+At a phase transition, report what completed, whether its gate passed, what
+phase/action comes next, and any decision waiting on the user. Use `WAITING FOR
+USER` or `BLOCKED` rather than implying progress. Do not narrate every tool
+call; markers are for phase changes and meaningful findings. For a partial run,
+name the component and say that the full pipeline is not in progress.
+
+Mark a phase `DONE` only when its gate is met:
+
+| Phase | Done when |
+|---|---|
+| 1. Grill | Scope, decisions, and promises are settled; no in-scope decision remains open. |
+| 2. Model and check | The agreed promises are encoded and checked; results and paths are saved. |
+| 3. Statechart | The chart/report reflects the checked model, with limits or hidden steps explained. |
+| 4. Board | The board or inline summary shows the latest decisions, results, and paths. |
+| 5. Validate | The model/check is trustworthy, findings are resolved or accepted, and the check can fail on a deliberate violation. |
+| 6. Package and hand off | Applicable skills are proved or explicitly skipped; artifacts, limits, and rerun instructions are handed off. |
+
+Keep one compact `WORKFLOW_STATUS.md` beside the working artifacts so the
+phase survives context compaction or a session change. For a pre-code flow,
+keep it beside the flow seed; for existing code, keep it in the temporary
+model/report workspace. Keep it as a current snapshot, not a chat transcript,
+and do not commit it by default. A useful template is:
+
+```markdown
+# Workflow status
+Scope: <one sentence>
+Phase: <n>/6 — <name>
+Status: <IN PROGRESS | WAITING FOR USER | BLOCKED | DONE | SKIPPED>
+Settled decisions: <brief bullets; retain exact promise wording>
+Promises: <P1 — approved/checking/holds/breaks; link report for details>
+Findings or decisions needed: <brief; name the user decision if any>
+Artifacts: <paths to model, chart, report, mocks>
+Next action: <one concrete action>
+```
+
+### Reduce context without reducing rigor
+
+- Load only the skill for the current phase, just before using it. Do not load
+  every linked skill at the start.
+- Set a bounded scope before grilling. Park unrelated ideas in an out-of-scope
+  note instead of opening new branches in the decision tree.
+- Keep the status file short. Preserve approved decisions, exact promises,
+  bounds, assumptions, unresolved findings, artifact paths, and the next action;
+  leave full models, reports, and traces in files and link to them.
+- Summarize checker output with rule status and shortest relevant
+  counterexamples. Do not paste full logs or repeatedly restate the entire
+  design/board in chat.
+- Update the status snapshot after meaningful decisions, check results, and
+  phase changes—not after every command. If context is running low, checkpoint
+  first and use the harness's compaction/resume mechanism when available. On
+  resume, read the status file and active artifacts rather than replaying the
+  conversation or rerunning completed checks without cause.
+- Do not drop a promise, assumption, bound, counterexample, or required recheck
+  just to save context. Reduce repetition, not verification coverage.
+
 ## Good use cases
 
 These examples are intentionally scoped to a flow and its promises, not an
@@ -337,7 +401,9 @@ or bugs.
 > First decide whether the full workflow, one component, or ordinary tests are
 > appropriate, and explain why. If you use the full workflow, keep the scope to
 > the consequential behavior, settle decisions before modeling, preserve the
-> user's promise wording, validate the formal check before creating any
-> project-local skills, and finish with the bounds, findings, artifacts, and
-> rerun command. Do not implement the feature until the design and findings
-> have been handed back for the user's decision.
+> user's promise wording, and maintain a concise `WORKFLOW_STATUS.md`. Announce
+> phase changes and gate results, load skills just in time, and keep full
+> reports in files rather than repeating them in chat. Validate the formal
+> check before creating project-local skills, then finish with the bounds,
+> findings, artifact paths, and rerun command. Do not implement the feature
+> until the design and findings have been handed back for the user's decision.
